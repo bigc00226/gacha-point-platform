@@ -1,5 +1,5 @@
 import "server-only";
-import { randomInt } from "node:crypto";
+import { randomFillSync } from "node:crypto";
 import { PPB } from "@/lib/probability";
 
 /**
@@ -20,7 +20,33 @@ export interface LotteryCandidate {
 
 export type RandomIntFn = (maxExclusive: number) => number;
 
-export const secureRandomInt: RandomIntFn = (maxExclusive) => randomInt(0, maxExclusive);
+// CSPRNG bytes are drawn in 64 KB batches (one syscall instead of one per draw),
+// then turned into uniform integers with rejection sampling (no modulo bias).
+const POOL_BYTES = 64 * 1024;
+let pool = Buffer.alloc(0);
+let poolOffset = 0;
+
+function nextUint32(): number {
+  if (poolOffset + 4 > pool.length) {
+    pool = randomFillSync(Buffer.allocUnsafe(POOL_BYTES));
+    poolOffset = 0;
+  }
+  const value = pool.readUInt32LE(poolOffset);
+  poolOffset += 4;
+  return value;
+}
+
+export const secureRandomInt: RandomIntFn = (maxExclusive) => {
+  if (!Number.isInteger(maxExclusive) || maxExclusive <= 0 || maxExclusive > 0x1_0000_0000) {
+    throw new RangeError(`maxExclusive out of range: ${maxExclusive}`);
+  }
+  const limit = Math.floor(0x1_0000_0000 / maxExclusive) * maxExclusive;
+  let value: number;
+  do {
+    value = nextUint32();
+  } while (value >= limit);
+  return value % maxExclusive;
+};
 
 /** Deterministic PRNG (mulberry32) for seed data and reproducible simulations. */
 export function seededRandomInt(seed: number): RandomIntFn {

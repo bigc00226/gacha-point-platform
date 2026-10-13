@@ -71,7 +71,9 @@ export function EmptyState({
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("skeleton rounded-lg", className)} aria-hidden="true" />;
+  // Default radius only when the caller sets none (classes are concatenated, not merged).
+  const radius = className && /(^|\s)rounded(-|\s|$)/.test(className) ? null : "rounded-lg";
+  return <div className={cn("skeleton", radius, className)} aria-hidden="true" />;
 }
 
 /** KPI tile for dashboards. */

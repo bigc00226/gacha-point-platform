@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api, ApiClientError, errorMessage } from "@/lib/client/api";
 import { cn, formatNumber } from "@/lib/format";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -43,16 +43,18 @@ export function LoginBonusModal({
   const [result, setResult] = useState<LoginBonusClaimDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
+  // Remember the dismissal (not the opening), so a reload before the member interacts
+  // still shows today's bonus.
+  function rememberShown() {
     try {
       window.localStorage.setItem(storageKey, todayKey);
     } catch {
       // Without storage the modal may show again on the next full page load — acceptable.
     }
-  }, [open, storageKey, todayKey]);
+  }
 
   function close() {
+    rememberShown();
     setOpen(false);
     // The layout only renders this prompt while today's bonus is unclaimed: refresh once the
     // celebration is dismissed so the header balance updates and the prompt goes away.
@@ -67,6 +69,7 @@ export function LoginBonusModal({
     } catch (err) {
       if (err instanceof ApiClientError && err.code === "ALREADY_CLAIMED") {
         toast.info("本日のログインボーナスは受け取り済みです");
+        rememberShown();
         setOpen(false);
         router.refresh();
       } else {
@@ -148,7 +151,7 @@ export function LoginBonusModal({
               </p>
               <p className="mt-2 text-sm text-muted">
                 所持チケット
-                <span className="tabular mx-1 font-bold text-fg">{formatNumber(balance)}</span>→
+                <span className="tabular mx-1 font-bold text-fg">{formatNumber(result.balances.tickets - result.tickets)}</span>→
                 <span className="tabular ml-1 font-black text-ticket">{formatNumber(result.balances.tickets)}枚</span>
               </p>
               <StreakStamps day={result.streak} claimedToday tickets={result.tickets} animateToday className="mt-4" />

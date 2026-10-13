@@ -5,7 +5,7 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { DrawResponse } from "@/lib/api-types";
 import type { DrawResultItem } from "@/lib/types";
-import { cn, formatNumber } from "@/lib/format";
+import { formatNumber } from "@/lib/format";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { getPortalRoot, useIsClient } from "@/components/ui/use-is-client";

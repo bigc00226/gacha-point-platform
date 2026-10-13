@@ -1,4 +1,9 @@
-@import "tailwindcss";
+/*
+ * Scan only src/ for class names. Without a git repository Tailwind cannot use
+ * .gitignore to skip .next/, and Next's dev log (.next/dev/logs) changes on every
+ * browser connection — which otherwise triggers a rebuild/reload loop in dev.
+ */
+@import "tailwindcss" source("..");
 
 /*
  * Design tokens.

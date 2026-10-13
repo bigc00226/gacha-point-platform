@@ -106,3 +106,8 @@ export function formatCountdown(target: DateInput, now: number = Date.now()): st
   if (hours > 0) return `${hours}時間${mins}分`;
   return `${mins}分`;
 }
+
+/** Current time in ms. Server components rendered per request read the clock through this. */
+export function nowMs(): number {
+  return Date.now();
+}

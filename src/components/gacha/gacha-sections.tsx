@@ -55,11 +55,6 @@ export function GachaHero({ gacha, serverNow }: { gacha: GachaDetailDto; serverN
     <section className="space-y-4">
       <div className="relative overflow-hidden rounded-3xl border border-line bg-surface shadow-2xl shadow-black/40">
         <CoverImage src={gacha.thumbnailUrl} alt={gacha.title} className="aspect-video w-full" loading="eager" fetchPriority="high" />
-        {gacha.badge && (
-          <span className="absolute left-3 top-3 rounded-lg bg-linear-to-r from-primary to-primary-2 px-2.5 py-1 text-[11px] font-black tracking-wider text-white shadow-lg shadow-black/30 sm:left-4 sm:top-4 sm:text-xs">
-            {gacha.badge}
-          </span>
-        )}
         {(soldOut || statusNote) && (
           <div className="absolute inset-0 grid place-items-center bg-black/55 backdrop-blur-[1px]">
             <span

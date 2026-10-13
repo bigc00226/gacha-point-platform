@@ -36,7 +36,7 @@ import { buildSeedDb } from "./seed";
  * Bump SCHEMA_VERSION whenever the shape of `Db` or the seed changes: a running
  * dev server then re-seeds instead of serving a stale shape.
  */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface Db {
   schemaVersion: number;

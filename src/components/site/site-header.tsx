@@ -59,12 +59,20 @@ export function SiteHeader({ user, siteName }: { user: PublicUser | null; siteNa
   );
 }
 
-export function AnnouncementBar({ text }: { text: string }) {
+export function AnnouncementBar({ text, link }: { text: string; link?: { href: string; label: string } }) {
   return (
     <div className="border-b border-accent/20 bg-linear-to-r from-accent/12 via-primary/10 to-accent/12">
       <p className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-4 py-1.5 text-center text-[11px] font-medium leading-snug text-fg/90 sm:text-xs">
         <Icon name="megaphone" size={14} className="shrink-0 text-accent" />
-        {text}
+        <span>
+          {text}
+          {link && (
+            <Link href={link.href} className="ml-1.5 inline-flex items-center gap-0.5 whitespace-nowrap font-bold text-accent underline-offset-2 hover:underline">
+              {link.label}
+              <Icon name="arrowRight" size={12} />
+            </Link>
+          )}
+        </span>
       </p>
     </div>
   );

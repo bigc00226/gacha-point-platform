@@ -1,0 +1,59 @@
+/* Top page decorations */
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  animation: marquee var(--marquee-duration, 45s) linear infinite;
+}
+
+.marqueeHost:hover .marquee {
+  animation-play-state: paused;
+}
+
+.rays {
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 210, 63, 0.38) 0deg 7deg,
+    transparent 8deg 22deg
+  );
+  mask-image: radial-gradient(circle, #000 10%, transparent 70%);
+  animation: spin 24s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pedestal {
+  background: radial-gradient(ellipse at center, rgba(255, 200, 61, 0.55), rgba(255, 140, 20, 0.15) 45%, transparent 70%);
+  filter: blur(6px);
+}
+
+.spotlight {
+  background:
+    radial-gradient(900px 340px at 85% 50%, rgba(255, 184, 0, 0.18), transparent 60%),
+    radial-gradient(600px 300px at 0% 0%, rgba(255, 62, 138, 0.14), transparent 60%),
+    linear-gradient(135deg, #1a1236 0%, #120d26 55%, #1d1405 100%);
+}
+
+.soldStamp {
+  transform: rotate(-12deg);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.85),
+    0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.cardGlow {
+  box-shadow:
+    0 0 0 1px rgba(255, 210, 63, 0.35),
+    0 12px 40px -12px rgba(255, 184, 0, 0.45);
+}

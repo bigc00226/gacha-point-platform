@@ -24,8 +24,10 @@ export function Logo({ siteName = "ポイガチャ", className }: { siteName?: s
   return (
     <Link href="/" className={cn("group inline-flex items-center gap-2", className)} aria-label={`${siteName} トップへ`}>
       <LogoMark size={30} className="transition-transform group-hover:rotate-12" />
-      <span className="font-display text-lg leading-none tracking-wide text-fg sm:text-xl">{siteName}</span>
-      <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-accent ring-1 ring-accent/40">
+      <span className="whitespace-nowrap font-display text-base leading-none tracking-wide text-fg min-[400px]:text-lg sm:text-xl">
+        {siteName}
+      </span>
+      <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-accent ring-1 ring-accent/40 sm:inline">
         DEMO
       </span>
     </Link>

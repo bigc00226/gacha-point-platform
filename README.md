@@ -1,36 +1,160 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ポイガチャ — 会員制WEBガチャ × ポイ活 デモ（MVP）
 
-## Getting Started
+会員制WEBガチャ（オリパ風）とポイ活（オファーウォール・動画リワード）を連動させたエンタメサイトの、初期MVPを想定したデモです。
+ガチャ・演出・ラストワン賞・チケット獲得・クーポン・ポイント交換・管理画面まで、実際に操作して確認できます。
 
-First, run the development server:
+- **Next.js 16（App Router）のみで構成**しています。別サーバーや外部サービスは不要です。
+- **データベースは使用していません。** データはサーバーのメモリ上に保持します（再起動・初期化でデモ用の初期データに戻ります）。
+- 画面はスマホ・PCの両方に対応しています。
+
+起動後、**`/guide`（デモのご案内）** に、デモアカウント・3分デモツアー・要件対応表・本番構成のご提案をまとめています。
+
+---
+
+## 起動方法
+
+Node.js **20.9 以上**が必要です。
 
 ```bash
+npm install
+
+# 開発モード
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
+
+# 本番モード（デモ公開時はこちらを推奨）
+npm run build
+npm run start            # ポートを変える場合: npm run start -- -p 8080
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## デモアカウント
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 種別 | メールアドレス | パスワード | 内容 |
+| --- | --- | --- | --- |
+| 一般会員 | `user@demo.jp` | `demo1234` | チケット3,000枚・160,000pt所持、獲得景品・履歴あり |
+| 管理者 | `admin@demo.jp` | `admin1234` | 管理画面（`/admin`）にアクセス可能 |
+| 一般会員（ダミー） | `player01@example.jp` 〜 `player36@example.jp` | `password123` | 集計・ランキング用のダミー会員 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+新規会員登録（`/register`）もそのまま試せます。
 
-## Learn More
+画面右端の **「DEMO」タブ**から、アカウント切り替え・チケット/ポイントの追加・動画視聴回数のリセット・「ラストワン直前にする」・データの初期化ができます。
 
-To learn more about Next.js, take a look at the following resources:
+## 主な画面
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**会員向け**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| URL | 内容 |
+| --- | --- |
+| `/` | トップ（ガチャ一覧、ラストワン間近、当選速報） |
+| `/gacha/[id]` | ガチャ詳細・1回/10回/100回引き・演出・結果一覧・ラストワン賞 |
+| `/earn` | チケットを貯める（ログインボーナス・リワード動画・オファーウォール） |
+| `/mypage` | 残高・獲得景品（発送依頼）・クーポンコード入力・各種履歴 |
+| `/exchange` | ポイント交換（景品一覧・在庫・お届け先入力） |
+| `/minigames` | ミニゲーム（外部ゲーム埋め込み枠のサンプル） |
+| `/guide` | デモのご案内・要件対応表・本番構成のご提案 |
 
-## Deploy on Vercel
+**管理画面（`/admin`）**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| URL | 内容 |
+| --- | --- |
+| `/admin` | ダッシュボード（会員数・抽選口数・チケットの付与/消費・未発送の注文・ガチャの販売状況など） |
+| `/admin/gachas` | ガチャの追加・編集・複製・削除、景品と確率の設定、確率シミュレーション |
+| `/admin/ranks` | ランク（特賞〜D賞・ラストワン賞）ごとのロゴ・演出（MP4/Lottie）設定 |
+| `/admin/media` | 画像・演出動画・Lottieのアップロード |
+| `/admin/rewards` | 付与チケット数（倍率）・動画の1日上限などの設定 |
+| `/admin/offers` | オファーウォール案件の管理 |
+| `/admin/postbacks` | 成果通知（Webhook）ログ・検証過程の確認・テスト送信 |
+| `/admin/coupons` | クーポン（使い捨て型・先着限定型）の発行・利用状況 |
+| `/admin/exchange-items` | ポイント交換景品・在庫の管理 |
+| `/admin/orders` | 発送管理（未発送/発送済、追跡番号、CSV出力） |
+| `/admin/users` | 会員管理（残高調整・利用停止・履歴） |
+| `/admin/minigames` | ミニゲーム埋め込み枠の管理 |
+| `/admin/loadtest` | 同時アクセス時の整合性テスト（ラストワン賞の重複・二重課金がないことを検証） |
+| `/admin/settings` | サイト設定・デモデータの初期化・操作ログ |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 環境変数
+
+すべて任意です。未設定の場合はデモ用の既定値で動作します（`.env.example` を `.env.local` にコピーして変更できます）。
+
+| 変数 | 既定値 | 説明 |
+| --- | --- | --- |
+| `SESSION_SECRET` | デモ用の固定値 | セッションCookieの署名鍵。**公開環境では長いランダム文字列を設定してください** |
+| `ADMOB_SSV_SECRET` | `demo-admob-ssv-secret` | 動画リワードの成果通知の署名検証用 |
+| `SKYFLAG_POSTBACK_SECRET` | `demo-skyflag-postback-secret` | skyflag 成果通知の署名検証用 |
+| `TAPJOY_POSTBACK_SECRET` | `demo-tapjoy-postback-secret` | Tapjoy 成果通知の署名検証用 |
+| `MEDIA_MAX_UPLOAD_MB` | `4` | 管理画面からアップロードできるファイルの上限（MB） |
+| `DEMO_TOOLS_ENABLED` | `true` | `false` でDEMOパネル・データ初期化・広告ネットワークのシミュレーターを無効化 |
+
+## デモの公開（デプロイ）について
+
+データをサーバーのメモリに保持するため、**1つのプロセスで常時起動する環境**での公開を推奨します。
+
+- **推奨:** Render / Railway / Fly.io / VPS などで `npm run build && npm run start` を実行（インスタンス数は1台）
+- 再起動・再デプロイすると、データはデモ用の初期データに戻ります（DEMOパネルや管理画面からいつでも初期化も可能です）
+- **Vercel などのサーバーレス環境**でも動作しますが、リクエストごとに別のインスタンスが応答する場合があり、操作内容が反映されないように見えることがあります。また、アップロードできるファイルサイズに上限（約4.5MB）があるため、`MEDIA_MAX_UPLOAD_MB` は `4` 以下にしてください
+- 公開時は `SESSION_SECRET` を必ず設定してください
+
+## 要件との対応
+
+| ご要件 | 実装 |
+| --- | --- |
+| メールアドレス＋パスワードのみのログイン | scryptでハッシュ化、署名付きCookieセッション、ログイン試行回数の制限 |
+| ガチャの追加・削除、景品名・画像・確率（1/100等）の設定 | 「1/100」「0.5%」形式で入力、合計チェック、残り確率の自動割当、在庫上限、確率シミュレーション |
+| 1回・10回・100回引きを1アクションで処理 | 1リクエスト＝1回の排他処理で最大100回を抽選（暗号論的乱数）。処理時間を結果画面に表示 |
+| ランクごとの演出動画（MP4/Lottie）とスキップ | 最高ランクの演出を再生、スキップで結果一覧へ。読み込み失敗時は内蔵アニメーションに自動切替 |
+| 素材のアップロードとランク・景品への紐付け | メディアライブラリ（画像/MP4/Lottie、形式チェック）、ランク設定画面で紐付け・プレビュー |
+| 総口数と「残り〇〇口」（WebSocketなし） | ページ表示時と抽選直後のみ残り口数APIを取得 |
+| ラストワン賞の確定画面 | 抽選処理の中で判定するため当選者は必ず1名 |
+| オファーウォール（skyflag・Tapjoy） | 成果通知を署名・時刻・重複・案件照合で検証してから付与 |
+| 動画リワード（1日上限・0:00リセット・グレーアウト） | 日本時間の日付ごとにサーバー側で回数を管理。上限・付与数は管理画面で変更可能 |
+| サーバー側での視聴完了検証 | 視聴セッション発行 → 署名付き成果通知を検証 → 付与。全通知をログ化 |
+| ポイントとチケットの区別 | 全画面でチケット（青）とポイント（金）を別表示。増減はすべて台帳に記録 |
+| クーポン（使い捨て型・先着限定型、100pt〜） | 一括発行・CSV出力、先着人数で自動終了、おひとり様1回、総当たり対策 |
+| ポイント交換（在庫・申請フォーム・発送ステータス） | 在庫とポイントを排他制御で同時更新、宛名CSV出力、キャンセル時のポイント返還 |
+| ミニゲーム埋め込みの拡張性 | 管理画面からURLを登録してiframe（sandbox）で埋め込み。サンプルゲーム付き |
+| ログインボーナス・実物景品 | 連続ログイン対応のログインボーナス、実物景品の発送依頼フロー |
+| アクセス集中時の整合性（ラストワン賞の重複防止） | ガチャ・会員単位のロック＋冪等キー。`/admin/loadtest` で同時アクセスを再現して検証可能 |
+
+## ディレクトリ構成
+
+```
+src/
+├─ app/
+│  ├─ (site)/            会員向け画面
+│  ├─ admin/             管理画面
+│  ├─ api/               API（Route Handlers）
+│  │  ├─ admin/          管理API（管理者のみ）
+│  │  ├─ webhooks/       成果通知の受信（admob-ssv / offerwall/[provider]）
+│  │  └─ demo/           デモ用API（広告ネットワークのシミュレーター等）
+│  └─ embed/             埋め込みミニゲームのサンプル
+├─ components/           画面コンポーネント（ui/ は共通UI部品）
+└─ lib/
+   ├─ server/
+   │  ├─ store.ts        インメモリのデータストア（データベースの代わり）
+   │  ├─ seed.ts         デモ用の初期データ
+   │  ├─ lock.ts         排他制御（キー単位のロック）
+   │  ├─ lottery.ts      抽選ロジック（整数確率・暗号論的乱数）
+   │  ├─ ledger.ts       チケット・ポイントの台帳
+   │  ├─ signature.ts    成果通知の署名検証
+   │  └─ services/       業務ロジック（ガチャ・リワード・クーポン・交換・管理機能）
+   └─ client/            ブラウザ側のAPIクライアント
+public/demo/             デモ用の画像・演出動画・Lottie
+```
+
+## 技術メモ
+
+- **構成:** Next.js 16（App Router）/ React 19 / TypeScript / Tailwind CSS v4。追加の実行時ライブラリは Lottie 再生用の `lottie-web` のみです。
+- **データ:** `src/lib/server/store.ts` がメモリ上にデータを保持します。業務ロジックは `services/` に集約しており、本番化の際はこの層をデータベースのトランザクションに置き換えます。
+- **抽選:** 確率は10億分の1単位の整数で管理し、暗号論的乱数で抽選します。抽選はすべてサーバー側で確定します。
+- **排他制御:** ガチャ・会員・クーポン・在庫などのキー単位でロックし、残り口数・残高・在庫を一貫して更新します。抽選リクエストにはIDを付け、再送時は同じ結果を返します（二重課金の防止）。
+- **成果通知:** デモでは HMAC-SHA256 の署名で検証します。本番では各社の方式（AdMob SSV の公開鍵検証、オファーウォール各社のハッシュ署名など）に合わせ、同じ流れ（署名 → 時刻 → 重複 → 業務ルール → 付与）で検証します。
+
+## 本番化に向けて
+
+1. データベース（PostgreSQL）への置き換え：`services/` の各処理を `SELECT … FOR UPDATE`・条件付きUPDATE・ユニーク制約（抽選リクエストID、成果通知の取引ID）を使ったトランザクションに移行
+2. 広告ネットワーク・オファーウォールとの接続：各社の管理画面で成果通知URL（`/api/webhooks/...`）を登録し、署名方式を各社仕様に変更
+3. メディアの保存先を S3 / Cloudflare R2 に変更し、CDN から配信
+4. メール送信（会員登録確認・パスワード再設定・発送通知）、Bot対策（Cloudflare Turnstile）、レート制限の追加
+5. `DEMO_TOOLS_ENABLED=false` でデモ用機能を無効化
+
+構成と費用の目安は `/guide` の「本番構成のご提案」をご覧ください。

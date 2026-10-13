@@ -793,6 +793,8 @@ function orderFor(
 
 function exchange(ctx: Ctx, user: User, item: ExchangeItem, atMs: number, status: OrderStatus, addressNo: number): Order | null {
   if (user.points < item.pointsRequired) return null;
+  // Digital items are issued immediately (same as the live exchange service).
+  if (item.type === "digital") status = "shipped";
   const address = item.type === "physical" ? user.lastAddress ?? fakeAddress(ctx.rand, addressNo) : null;
   const order = orderFor(
     ctx,

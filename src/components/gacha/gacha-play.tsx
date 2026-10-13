@@ -340,7 +340,7 @@ function DrawButton({ option, busy, onClick, size = "lg" }: { option: DrawOption
     >
       <span className="flex min-w-0 items-center gap-2">
         <Icon name={option.kind === "all" ? "crown" : "capsule"} size={20} filled={option.kind === "all"} />
-        <span className="truncate">{option.label}</span>
+        <span className={cn("truncate", option.kind === "all" && "text-[15px]")}>{option.label}</span>
       </span>
       <span
         className={cn(
