@@ -1,5 +1,6 @@
 import "server-only";
 import { unstable_rethrow } from "next/navigation";
+import { withRequestState } from "./state/sync";
 
 /**
  * Error thrown by services / handlers; converted to a JSON error response.
@@ -43,16 +44,25 @@ export function toErrorResponse(err: unknown): Response {
  *     const { id } = await params;
  *     return jsonOk(...);
  *   });
+ *
+ * It also keeps the state shared between server instances in step (see
+ * state/sync.ts): every request reads the latest state first, and requests that
+ * write (any method but GET/HEAD, or `{ writes: true }` for GET webhooks)
+ * publish their changes afterwards.
  */
 export function route<C = unknown>(
   handler: (req: Request, ctx: C) => Promise<Response> | Response,
+  options: { writes?: boolean } = {},
 ): (req: Request, ctx: C) => Promise<Response> {
   return async (req, ctx) => {
-    try {
-      return await handler(req, ctx);
-    } catch (err) {
-      return toErrorResponse(err);
-    }
+    const writes = options.writes ?? !(req.method === "GET" || req.method === "HEAD");
+    return withRequestState(req, writes, async (request) => {
+      try {
+        return await handler(request, ctx);
+      } catch (err) {
+        return toErrorResponse(err);
+      }
+    });
   };
 }
 

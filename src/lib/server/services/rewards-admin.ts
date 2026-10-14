@@ -35,6 +35,7 @@ import { recordAudit } from "../audit";
 import { ApiError, notFoundError } from "../http";
 import { newId } from "../ids";
 import { lockKeys, withLock, withLocks } from "../lock";
+import { statePersistenceEnabled } from "../state/sync";
 import { getDb, visibleUsers, type Db } from "../store";
 import { vBool, vInt, vNumber, vOneOf, vOptionalUrl, vString, validationFail } from "../validate";
 import { getVideoStatus, offerCompletionState, offerTicketsFor } from "./rewards";
@@ -469,26 +470,33 @@ function findPostbackById(db: Db, id: string): PostbackLog | null {
   return null;
 }
 
-/** Sends the notification to the real webhook route over HTTP; falls back to the in-process handler. */
+/**
+ * Sends the notification to the real webhook route over HTTP; falls back to the in-process handler.
+ * With a shared state store (Vercel) the loopback could reach another instance — or wait on this
+ * request's own state lock — so the handler runs in-process there.
+ */
 async function deliver(kind: PostbackTestKind, provider: string, params: Record<string, string>): Promise<Delivery> {
-  const path = kind === "video" ? ADMOB_WEBHOOK_PATH : offerwallWebhookPath(provider);
-  const url = `${loopbackBase()}${path}?${new URLSearchParams(params).toString()}`;
-  try {
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { [TEST_NONCE_HEADER]: issueTestNonce(), "user-agent": "POIGACHA-Admin-WebhookTest/1.0" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
-    });
-    const body = (await res.json().catch(() => null)) as { postbackId?: unknown } | null;
-    const id = body && typeof body.postbackId === "string" ? body.postbackId : null;
-    return { httpStatus: res.status, body, transport: "http", log: id ? findPostbackById(getDb(), id) : null };
-  } catch {
-    const ctx = { method: "GET" as const, source: "admin_test" as const };
-    const outcome: WebhookOutcome =
-      kind === "video" ? await processVideoCallback(params, ctx) : await processOfferPostback(provider, params, ctx);
-    return { httpStatus: outcome.httpStatus, body: outcome.body, transport: "in-process", log: outcome.log };
+  if (!statePersistenceEnabled()) {
+    const path = kind === "video" ? ADMOB_WEBHOOK_PATH : offerwallWebhookPath(provider);
+    const url = `${loopbackBase()}${path}?${new URLSearchParams(params).toString()}`;
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { [TEST_NONCE_HEADER]: issueTestNonce(), "user-agent": "POIGACHA-Admin-WebhookTest/1.0" },
+        cache: "no-store",
+        signal: AbortSignal.timeout(15_000),
+      });
+      const body = (await res.json().catch(() => null)) as { postbackId?: unknown } | null;
+      const id = body && typeof body.postbackId === "string" ? body.postbackId : null;
+      return { httpStatus: res.status, body, transport: "http", log: id ? findPostbackById(getDb(), id) : null };
+    } catch {
+      // Fall through to the in-process handler.
+    }
   }
+  const ctx = { method: "GET" as const, source: "admin_test" as const };
+  const outcome: WebhookOutcome =
+    kind === "video" ? await processVideoCallback(params, ctx) : await processOfferPostback(provider, params, ctx);
+  return { httpStatus: outcome.httpStatus, body: outcome.body, transport: "in-process", log: outcome.log };
 }
 
 /** Creates a started ad session for the test (as if an ad had just been served). */

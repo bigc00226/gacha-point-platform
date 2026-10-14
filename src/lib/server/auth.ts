@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { User } from "@/lib/types";
 import { ApiError } from "./http";
+import { syncRequestState } from "./state/sync";
 import { getDb } from "./store";
 
 /**
@@ -58,8 +59,12 @@ export async function getSessionUserId(): Promise<string | null> {
   return token ? verifySessionToken(token) : null;
 }
 
-/** The signed-in, active user — or null. */
+/**
+ * The signed-in, active user — or null. Pages call this before reading data, so
+ * it also brings this server instance up to date with the shared state.
+ */
 export async function getCurrentUser(): Promise<User | null> {
+  await syncRequestState();
   const userId = await getSessionUserId();
   if (!userId) return null;
   const user = getDb().users.get(userId);
@@ -97,15 +102,10 @@ export async function requireApiAdmin(): Promise<User> {
 }
 
 // --- Login throttling: 5 failures for the same email → locked for 60 seconds ---
-
-type ThrottleGlobal = typeof globalThis & {
-  __poigachaLoginFailures?: Map<string, { count: number; lockedUntil: number }>;
-};
-const throttleStore = globalThis as ThrottleGlobal;
-const loginFailures = (throttleStore.__poigachaLoginFailures ??= new Map());
+// (Kept in the database so every server instance applies the same lock.)
 
 export function assertLoginAllowed(email: string): void {
-  const entry = loginFailures.get(email);
+  const entry = getDb().loginFailures.get(email);
   if (entry && entry.lockedUntil > Date.now()) {
     const seconds = Math.ceil((entry.lockedUntil - Date.now()) / 1000);
     throw new ApiError(429, "RATE_LIMITED", `ログインの試行回数が上限に達しました。${seconds}秒後に再度お試しください。`);
@@ -113,6 +113,7 @@ export function assertLoginAllowed(email: string): void {
 }
 
 export function recordLoginFailure(email: string): void {
+  const loginFailures = getDb().loginFailures;
   const entry = loginFailures.get(email) ?? { count: 0, lockedUntil: 0 };
   entry.count += 1;
   if (entry.count >= 5) {
@@ -123,5 +124,5 @@ export function recordLoginFailure(email: string): void {
 }
 
 export function clearLoginFailures(email: string): void {
-  loginFailures.delete(email);
+  getDb().loginFailures.delete(email);
 }

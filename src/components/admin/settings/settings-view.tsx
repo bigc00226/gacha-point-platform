@@ -83,13 +83,45 @@ export function SettingsView({ data }: { data: SettingsPageDto }) {
         </Card>
 
         <Card>
-          <CardHeader icon="database" title="デモ環境" description="このデモはデータベースを使わず、サーバーのメモリ上でデータを管理しています。" />
+          <CardHeader
+            icon="database"
+            title="デモ環境"
+            description={
+              data.env.state.shared
+                ? "データベースは使わず、メモリ上のデータを共有キャッシュ経由で全サーバーインスタンスにそろえています。"
+                : "このデモはデータベースを使わず、サーバーのメモリ上でデータを管理しています。"
+            }
+          />
           <CardBody className="space-y-4">
             <DescriptionList
               items={[
                 { label: "Next.js", value: data.env.next },
                 { label: "Node.js", value: data.env.node },
-                { label: "サーバー起動", value: formatDateTime(data.env.serverStartedAt) },
+                { label: "データの保存先", value: data.env.state.label },
+                ...(data.env.state.shared
+                  ? [
+                      {
+                        label: "共有データ",
+                        value: data.env.state.version
+                          ? `v${formatNumber(data.env.state.version)}（${data.env.state.savedAt ? formatDateTime(data.env.state.savedAt) : "—"} 保存）`
+                          : "未同期",
+                      },
+                    ]
+                  : []),
+                ...(data.env.state.lastError
+                  ? [
+                      {
+                        label: "直近のエラー",
+                        value: (
+                          <span className="text-xs text-danger">
+                            {data.env.state.lastError}
+                            {data.env.state.lastErrorAt && `（${formatDateTime(data.env.state.lastErrorAt)}）`}
+                          </span>
+                        ),
+                      },
+                    ]
+                  : []),
+                { label: data.env.state.shared ? "このインスタンスの起動" : "サーバー起動", value: formatDateTime(data.env.serverStartedAt) },
                 { label: "データ初期化", value: formatDateTime(data.env.seededAt) },
                 { label: "アップロード上限", value: `${data.env.maxUploadMb}MB / ファイル` },
                 { label: "デモ用ツール", value: data.env.demoTools ? <Badge tone="success">有効</Badge> : <Badge tone="neutral">無効</Badge> },

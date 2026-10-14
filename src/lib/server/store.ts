@@ -33,10 +33,13 @@ import { buildSeedDb } from "./seed";
  * pages and Route Handlers of the running server process. Restarting the server
  * (or "デモデータ初期化" in the admin) restores the seed data.
  *
+ * On serverless hosts (Vercel) requests can land on different instances, so
+ * `state/sync.ts` keeps every instance's copy in step through a shared cache.
+ *
  * Bump SCHEMA_VERSION whenever the shape of `Db` or the seed changes: a running
  * dev server then re-seeds instead of serving a stale shape.
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export interface Db {
   schemaVersion: number;
@@ -71,6 +74,14 @@ export interface Db {
   siteSettings: SiteSettings;
   /** Append-only, oldest first. */
   auditLogs: AuditLog[];
+  /**
+   * Rate-limit counters. They live in the database (not in module state) so
+   * every server instance enforces the same limits.
+   */
+  /** Failed logins per email → locked until (epoch ms). */
+  loginFailures: Map<string, { count: number; lockedUntil: number }>;
+  /** Wrong coupon codes per member (epoch ms of each failure). */
+  couponFailures: Map<ID, number[]>;
 }
 
 type StoreGlobal = typeof globalThis & { __poigachaDb?: Db };
@@ -92,6 +103,17 @@ export function getDb(): Db {
 /** Restore the initial demo data. */
 export function resetDb(): Db {
   return seed();
+}
+
+/** The live database if this process already has one (never seeds). */
+export function peekDb(): Db | undefined {
+  const db = store.__poigachaDb;
+  return db && db.schemaVersion === SCHEMA_VERSION ? db : undefined;
+}
+
+/** Replace the live database (used when loading the state shared between server instances). */
+export function installDb(db: Db): void {
+  store.__poigachaDb = db;
 }
 
 // ---------------------------------------------------------------------------

@@ -2,6 +2,7 @@ import "server-only";
 import type { AuditLog, User } from "@/lib/types";
 import { recordAudit } from "../audit";
 import { withLock } from "../lock";
+import { stateStatus, type StateStatus } from "../state/sync";
 import { getDb } from "../store";
 import { vString } from "../validate";
 
@@ -12,7 +13,16 @@ function processStartedAt(): string {
 
 export interface SettingsPageDto {
   site: { siteName: string; tagline: string; announcement: string; updatedAt: string };
-  env: { node: string; next: string; serverStartedAt: string; seededAt: string; demoTools: boolean; maxUploadMb: number };
+  env: {
+    node: string;
+    next: string;
+    serverStartedAt: string;
+    seededAt: string;
+    demoTools: boolean;
+    maxUploadMb: number;
+    /** Where the demo data lives (this process's memory, or shared between instances). */
+    state: StateStatus;
+  };
   counts: Array<{ label: string; value: number }>;
   audits: AuditLog[];
 }
@@ -21,7 +31,15 @@ export function getSettingsPage(nextVersion: string, maxUploadMb: number, demoTo
   const db = getDb();
   return {
     site: { ...db.siteSettings },
-    env: { node: process.version, next: nextVersion, serverStartedAt: processStartedAt(), seededAt: db.seededAt, demoTools, maxUploadMb },
+    env: {
+      node: process.version,
+      next: nextVersion,
+      serverStartedAt: processStartedAt(),
+      seededAt: db.seededAt,
+      demoTools,
+      maxUploadMb,
+      state: stateStatus(),
+    },
     counts: [
       { label: "会員", value: [...db.users.values()].filter((u) => !u.isVirtual).length },
       { label: "ガチャ", value: [...db.gachas.values()].filter((g) => !g.isSandbox).length },

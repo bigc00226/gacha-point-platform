@@ -16,4 +16,4 @@ export const GET = route(async (req) => {
   const { params, error } = await readWebhookParams(req);
   const outcome = await processVideoCallback(params, { method: "GET", source: webhookSource(req), parseError: error });
   return Response.json(outcome.body, { status: outcome.httpStatus, headers: { "Cache-Control": "no-store" } });
-});
+}, { writes: true });

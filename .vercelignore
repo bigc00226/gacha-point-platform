@@ -1,0 +1,2 @@
+# Local build caches (node_modules, .next and .env*.local are excluded by Vercel automatically)
+*.tsbuildinfo

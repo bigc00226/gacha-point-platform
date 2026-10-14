@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { listMiniGames } from "@/lib/server/services/minigames";
+import { syncRequestState } from "@/lib/server/state/sync";
 import { Icon } from "@/components/ui/icon";
 import { Notice } from "@/components/ui/misc";
 import { MiniGameGrid } from "@/components/minigames/minigame-grid";
@@ -7,6 +8,7 @@ import { MiniGameGrid } from "@/components/minigames/minigame-grid";
 export const metadata: Metadata = { title: "ミニゲーム" };
 
 export default async function MiniGamesPage() {
+  await syncRequestState();
   return (
     <div className="space-y-6">
       <section className="relative overflow-hidden rounded-3xl border border-line bg-linear-to-br from-[#1b1450] via-surface to-[#3b1240] p-5 sm:p-7">

@@ -1,4 +1,6 @@
+import { route } from "@/lib/server/http";
 import { getMediaBlob } from "@/lib/server/services/media";
+import { ensureMediaBytes } from "@/lib/server/state/sync";
 
 export const dynamic = "force-dynamic";
 
@@ -6,8 +8,9 @@ export const dynamic = "force-dynamic";
  * Serves uploaded media. Supports HTTP Range requests (206), which Safari requires
  * for MP4 playback. Uploaded SVGs cannot run scripts: the response is sandboxed by CSP.
  */
-export async function GET(req: Request, ctx: RouteContext<"/api/media/[id]">) {
+export const GET = route<RouteContext<"/api/media/[id]">>(async (req, ctx) => {
   const { id } = await ctx.params;
+  await ensureMediaBytes(id);
   const found = getMediaBlob(id);
   if (!found) return new Response("Not Found", { status: 404 });
   const { asset, bytes } = found;
@@ -45,4 +48,4 @@ export async function GET(req: Request, ctx: RouteContext<"/api/media/[id]">) {
 
   headers.set("Content-Length", String(total));
   return new Response(new Uint8Array(bytes), { status: 200, headers });
-}
+});

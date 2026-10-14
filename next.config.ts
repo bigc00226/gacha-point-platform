@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   // root layout opts into `force-dynamic` rendering instead.
   cacheComponents: false,
   poweredByHeader: false,
+  // Loaded from node_modules at runtime (only on Vercel, for the shared state cache).
+  // Bundling it would try to resolve its optional `ws` import.
+  serverExternalPackages: ["@vercel/functions"],
   // Keep the phone tab bar and draw buttons unobstructed while demoing with `next dev`
   // (compile/runtime errors are still shown).
   devIndicators: false,

@@ -18,5 +18,6 @@ async function handle(req: Request, ctx: RouteContext<"/api/webhooks/offerwall/[
   return Response.json(outcome.body, { status: outcome.httpStatus, headers: { "Cache-Control": "no-store" } });
 }
 
-export const GET = route<RouteContext<"/api/webhooks/offerwall/[provider]">>(handle);
+// GET postbacks still write (they grant tickets and log), so they publish the shared state too.
+export const GET = route<RouteContext<"/api/webhooks/offerwall/[provider]">>(handle, { writes: true });
 export const POST = route<RouteContext<"/api/webhooks/offerwall/[provider]">>(handle);

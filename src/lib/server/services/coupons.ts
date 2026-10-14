@@ -36,21 +36,22 @@ function findByCode(code: string): Coupon | undefined {
 }
 
 // --- Brute-force protection: 10 failed attempts per member per 10 minutes ---
-type FailGlobal = typeof globalThis & { __poigachaCouponFails?: Map<string, number[]> };
-const failStore = globalThis as FailGlobal;
-const fails = (failStore.__poigachaCouponFails ??= new Map<string, number[]>());
+// (Kept in the database so every server instance counts the same attempts.)
 const FAIL_WINDOW_MS = 10 * 60_000;
 const FAIL_LIMIT = 10;
 
 function assertNotThrottled(userId: string) {
+  const fails = getDb().couponFailures;
   const now = Date.now();
   const recent = (fails.get(userId) ?? []).filter((t) => now - t < FAIL_WINDOW_MS);
-  fails.set(userId, recent);
+  if (recent.length > 0) fails.set(userId, recent);
+  else fails.delete(userId);
   if (recent.length >= FAIL_LIMIT) {
     throw new ApiError(429, "RATE_LIMITED", "入力ミスが続いたため、しばらく時間をおいてから（10分後）再度お試しください。");
   }
 }
 function recordFailure(userId: string) {
+  const fails = getDb().couponFailures;
   fails.set(userId, [...(fails.get(userId) ?? []), Date.now()]);
 }
 

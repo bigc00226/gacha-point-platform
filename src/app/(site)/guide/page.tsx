@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { syncRequestState } from "@/lib/server/state/sync";
 import { getDb } from "@/lib/server/store";
 import { cn } from "@/lib/format";
 import { nowMs } from "@/lib/time";
@@ -47,7 +48,8 @@ function A({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  await syncRequestState();
   const db = getDb();
   const now = nowMs();
   const singleCodes = [...db.coupons.values()]
@@ -357,7 +359,7 @@ export default function GuidePage() {
             <ul className="divide-y divide-line text-sm">
               {(
                 [
-                  ["データの保存", "サーバーのメモリ（再起動・初期化で元に戻ります）", "PostgreSQL（自動バックアップ）"],
+                  ["データの保存", "サーバーのメモリ（Vercel では全インスタンスで共有。再デプロイ・初期化で元に戻ります）", "PostgreSQL（自動バックアップ）"],
                   ["動画リワード・オファーウォール", "配信会社の成果通知を画面上で再現", "AdMob・skyflag・Tapjoyの実際のSDK／成果通知と接続"],
                   ["デジタル特典・ギフトコード", "ダミーのコードを表示", "ギフト発行サービスとAPI連携、または運営が発行したコードを配布"],
                   ["メディアのアップロード", "1ファイル数MBまで（サーバーに直接保存）", "S3/R2へ直接アップロードし、大容量の演出動画もCDNで配信"],
@@ -390,7 +392,7 @@ export default function GuidePage() {
                 ["100回引きでサーバーに負荷はかかりませんか？", "100回分を1回のリクエスト・1回のトランザクションで処理するため、1回引きを100回行うよりも大幅に軽量です。デモでも処理時間（数ミリ秒程度）を結果画面に表示しています。"],
                 ["動画の視聴上限はいつリセットされますか？", "日本時間の毎日0:00です。バッチ処理ではなく、日付が変わった最初のアクセスで自動的に0回として扱います。上限回数は管理画面からいつでも変更できます。"],
                 ["AdMob・Tapjoy はWEBサイトでも利用できますか？", "AdMob・Tapjoy は主にスマホアプリ向けのサービスです。WEBサイトでは Google Ad Manager のウェブ向けリワード広告など、ブラウザに対応した広告・オファーウォールを利用します。サーバーへの成果通知（S2S）の仕様は配信会社ごとに異なるため、要件定義の段階で確認し、本デモと同じ「サーバーで検証してから付与」する方式で接続します。"],
-                ["データはどこに保存されていますか？", "このデモはデータベースを使用せず、サーバーのメモリ上に保存しています。サーバーの再起動や「デモデータを初期化」で初期状態に戻ります。本番ではPostgreSQLに保存します。"],
+                ["データはどこに保存されていますか？", "このデモはデータベースを使用せず、サーバーのメモリ上に保存しています（Vercel で公開した場合は、Vercel 標準のキャッシュ機能で全サーバーに同じデータを共有します）。再起動・再デプロイや「デモデータを初期化」で初期状態に戻ります。本番ではPostgreSQLに保存します。"],
               ] as const
             ).map(([q, a]) => (
               <details key={q} className="group rounded-2xl border border-line bg-surface">

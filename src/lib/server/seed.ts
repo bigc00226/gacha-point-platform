@@ -1037,6 +1037,8 @@ function emptyDb(now: number): Db {
     miniGames: new Map(),
     siteSettings: { siteName: "", tagline: "", announcement: "", updatedAt: iso(now) },
     auditLogs: [],
+    loginFailures: new Map(),
+    couponFailures: new Map(),
   };
 }
 
