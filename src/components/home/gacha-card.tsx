@@ -18,7 +18,7 @@ export function GachaCard({ gacha, serverNow, priority = false }: { gacha: Gacha
       href={`/gacha/${gacha.id}`}
       prefetch={false}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border bg-surface transition duration-200",
+        "group cv-auto relative flex flex-col overflow-hidden rounded-2xl border bg-surface transition duration-200 [--cv-size:340px]",
         "hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-2 focus-visible:outline-primary",
         gacha.nearLastOne && !soldOut ? cn("border-accent/40", styles.cardGlow) : "border-line hover:border-line-strong",
       )}

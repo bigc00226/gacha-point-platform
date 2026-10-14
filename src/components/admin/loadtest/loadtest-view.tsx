@@ -190,7 +190,7 @@ export function LoadTestView() {
                 title={r.ok ? "整合性OK：すべての検証を通過しました" : "不整合を検出しました"}
                 sub={`${r.mode === "lock" ? "排他制御あり" : "排他制御なし（比較用）"} ／ 仮想ユーザー ${formatNumber(r.requests)}名 ／ 総口数 ${formatNumber(r.totalSlots)}口 ／ ${formatNumber(r.durationMs)}ms`}
               />
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
                 <StatCard label="処理時間" value={`${formatNumber(r.durationMs)}ms`} sub={`${formatNumber(r.throughput)} リクエスト/秒`} icon="zap" tone="info" />
                 <StatCard label="抽選成功" value={`${formatNumber(r.succeeded)}件`} sub={`完売で受付終了 ${formatNumber(r.rejected.soldOut)}件・残り不足 ${formatNumber(r.rejected.insufficientSlots)}件`} icon="checkCircle" tone="success" />
                 <StatCard label="販売口数 / 総口数" value={`${formatNumber(r.slotsSold)} / ${formatNumber(r.totalSlots)}`} sub={`記録上の残り ${formatNumber(r.finalRemaining)}口`} icon="capsule" tone={r.slotsSold > r.totalSlots ? "danger" : "primary"} />

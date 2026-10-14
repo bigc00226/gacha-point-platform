@@ -114,7 +114,7 @@ export function LedgerList({ entries }: { entries: LedgerEntry[] }) {
             {pageItems.map((e) => {
               const ticket = e.currency === "ticket";
               return (
-                <li key={e.id} className="flex items-center gap-3 px-4 py-3">
+                <li key={e.id} className="cv-auto flex items-center gap-3 px-4 py-3 [--cv-size:64px]">
                   <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", ticket ? "bg-ticket/12 text-ticket" : "bg-point/12 text-point")}>
                     <Icon name={ticket ? "ticket" : "coin"} size={16} />
                   </span>

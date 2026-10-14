@@ -143,7 +143,7 @@ export function MediaLibrary({
           {assets.map((asset) => {
             const selected = selectedUrl === asset.url;
             return (
-              <li key={asset.id}>
+              <li key={asset.id} className="cv-auto [--cv-size:240px]">
                 <button
                   type="button"
                   onClick={() => (mode === "pick" ? onSelect?.(asset) : onOpen?.(asset))}

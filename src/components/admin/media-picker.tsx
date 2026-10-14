@@ -94,8 +94,8 @@ export function MediaPicker({ value, onChange, kinds, label, aspect = "16/9", di
   return (
     <div>
       {label && <Label>{label}</Label>}
-      <div className="flex items-center gap-3 rounded-xl border border-line bg-surface-2 p-2">
-        <div className="w-28 shrink-0 overflow-hidden rounded-lg border border-line bg-surface" style={{ aspectRatio: aspect }}>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-line bg-surface-2 p-2">
+        <div className="w-24 shrink-0 overflow-hidden rounded-lg border border-line bg-surface sm:w-28" style={{ aspectRatio: aspect }}>
           {value ? (
             <MediaThumb kind={kind} url={value} name={name ?? ""} className="size-full" />
           ) : (
@@ -108,10 +108,13 @@ export function MediaPicker({ value, onChange, kinds, label, aspect = "16/9", di
           <p className={cn("truncate text-sm", value ? "font-bold text-fg" : "text-muted")}>{value ? name : "未設定"}</p>
           <p className="truncate text-xs text-subtle">{value ? MEDIA_KIND_LABELS[kind] : kinds.map((k) => MEDIA_KIND_LABELS[k]).join("・")}</p>
         </div>
-        <Button size="sm" variant="secondary" leftIcon="image" onClick={() => setOpen(true)} disabled={disabled}>
-          ライブラリから選択
-        </Button>
-        {value && <IconButton icon="x" label="解除" size="sm" onClick={() => onChange(null)} disabled={disabled} />}
+        {/* Phones: actions take their own full-width line instead of pushing the row wider. */}
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Button size="sm" variant="secondary" leftIcon="image" onClick={() => setOpen(true)} disabled={disabled} className="flex-1 sm:flex-none">
+            ライブラリから選択
+          </Button>
+          {value && <IconButton icon="x" label="解除" size="sm" onClick={() => onChange(null)} disabled={disabled} />}
+        </div>
       </div>
       {modal}
     </div>

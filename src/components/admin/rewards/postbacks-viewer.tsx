@@ -152,7 +152,7 @@ export function PostbacksViewer({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="本日の受信" value={formatNumber(k.todayReceived)} sub={`累計 ${formatNumber(k.total)}件`} icon="signal" tone="info" />
         <StatCard label="本日の付与" value={`${formatNumber(k.todayGranted)}件`} sub={`${formatNumber(k.todayTickets)}枚を付与`} icon="checkCircle" tone="success" />
         <StatCard label="本日の拒否" value={`${formatNumber(k.todayRejected)}件`} sub="署名不正・期限切れなど" icon="shield" tone="danger" />
@@ -337,23 +337,23 @@ export function PostbacksViewer({
               </THead>
               <TBody>
                 {list.rows.map((log) => (
-                  <TR key={log.id} className="cursor-pointer" onClick={() => setDetail(log)}>
-                    <TD className="tabular whitespace-nowrap text-xs">{formatDateTime(log.receivedAt)}</TD>
-                    <TD>
+                  <TR key={log.id} className="cursor-pointer @max-4xl:relative" onClick={() => setDetail(log)}>
+                    <TD label="受信日時" className="tabular whitespace-nowrap text-xs">{formatDateTime(log.receivedAt)}</TD>
+                    <TD mobile="title" className="@max-4xl:pr-8 @max-4xl:font-bold">
                       <span className="inline-flex items-center gap-1.5 text-sm">
                         <Icon name={log.kind === "video" ? "tv" : "smartphone"} size={14} className="text-muted" />
                         {log.kind === "video" ? "動画" : "案件"}
                         <span className="text-xs text-muted">/ {log.provider}</span>
                       </span>
                     </TD>
-                    <TD className="text-sm">{log.userNickname ?? <span className="text-muted">{log.userId ?? "—"}</span>}</TD>
-                    <TD className="max-w-[180px] truncate font-mono text-xs text-muted">{log.transactionId ?? "—"}</TD>
-                    <TD>
+                    <TD label="会員" className="text-sm">{log.userNickname ?? <span className="text-muted">{log.userId ?? "—"}</span>}</TD>
+                    <TD label="transaction_id" mobile="hide" className="max-w-[180px] truncate font-mono text-xs text-muted">{log.transactionId ?? "—"}</TD>
+                    <TD label="結果">
                       <StatusBadge status={log.status} />
                     </TD>
-                    <TD className="tabular text-right font-bold text-ticket">{log.ticketsGranted > 0 ? `+${formatNumber(log.ticketsGranted)}` : "—"}</TD>
-                    <TD className="text-xs text-muted">{SOURCE_LABELS[log.source]}</TD>
-                    <TD>
+                    <TD label="付与" className="tabular text-right font-bold text-ticket">{log.ticketsGranted > 0 ? `+${formatNumber(log.ticketsGranted)}` : "—"}</TD>
+                    <TD label="送信元" className="text-xs text-muted">{SOURCE_LABELS[log.source]}</TD>
+                    <TD className="@max-4xl:absolute @max-4xl:right-3 @max-4xl:top-3 @max-4xl:w-auto @max-4xl:p-0">
                       <Icon name="chevronRight" size={16} className="text-subtle" />
                     </TD>
                   </TR>

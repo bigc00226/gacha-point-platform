@@ -128,44 +128,44 @@ export function ExchangeItemsManager({ initial }: { initial: AdminExchangeItemDt
               <TH>種類</TH>
               <TH className="text-right">必要ポイント</TH>
               <TH className="text-center">在庫</TH>
-              <TH className="text-right">交換数（未発送）</TH>
+              <TH className="text-right @max-5xl:hidden">交換数（未発送）</TH>
               <TH>公開</TH>
               <TH className="text-right">操作</TH>
             </tr>
           </THead>
           <TBody>
             {items.map((i) => (
-              <TR key={i.id}>
-                <TD>
+              <TR key={i.id} className="@max-4xl:relative">
+                <TD mobile="title" className="@max-4xl:pr-20">
                   <div className="flex items-center gap-3">
                     <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-surface-3">
                       {i.imageUrl && <img src={i.imageUrl} alt="" className="size-10 object-contain" />}
                     </span>
-                    <div className="min-w-0 max-w-xs">
+                    <div className="min-w-0 max-w-64 @6xl:max-w-xs">
                       <p className="truncate font-bold">{i.name}</p>
                       <p className="truncate text-xs text-muted">{i.description}</p>
                     </div>
                   </div>
                 </TD>
-                <TD>
+                <TD label="種類">
                   <Badge tone={i.type === "digital" ? "info" : "primary"}>{i.type === "digital" ? "デジタル" : "実物"}</Badge>
                 </TD>
-                <TD className="tabular text-right font-bold text-point">{formatNumber(i.pointsRequired)}pt</TD>
-                <TD>
+                <TD label="必要ポイント" className="tabular text-right font-bold text-point">{formatNumber(i.pointsRequired)}pt</TD>
+                <TD label="在庫">
                   <div className="flex items-center justify-center gap-1">
                     <IconButton icon="minus" label="在庫を1減らす" size="xs" variant="secondary" disabled={busy === i.id || i.stock <= 0} onClick={() => quickUpdate(i, { stock: String(i.stock - 1) }, "在庫を更新しました")} />
                     <span className={`tabular w-12 text-center font-bold ${i.stock <= 0 ? "text-danger" : ""}`}>{formatNumber(i.stock)}</span>
                     <IconButton icon="plus" label="在庫を1増やす" size="xs" variant="secondary" disabled={busy === i.id} onClick={() => quickUpdate(i, { stock: String(i.stock + 1) }, "在庫を更新しました")} />
                   </div>
                 </TD>
-                <TD className="tabular text-right text-sm">
+                <TD label="交換数（未発送）" className="tabular text-right text-sm @4xl:@max-5xl:hidden">
                   {formatNumber(i.orderCount)}
                   {i.pendingCount > 0 && <span className="ml-1 text-xs text-warning">（{i.pendingCount}）</span>}
                 </TD>
-                <TD>
+                <TD label="公開">
                   <Switch checked={i.active} onChange={() => quickUpdate(i, { active: !i.active }, i.active ? "非公開にしました" : "公開しました")} disabled={busy === i.id} />
                 </TD>
-                <TD>
+                <TD className="@max-4xl:absolute @max-4xl:right-2 @max-4xl:top-2.5 @max-4xl:w-auto @max-4xl:p-0">
                   <div className="flex justify-end gap-1">
                     <IconButton icon="edit" label="編集" size="sm" onClick={() => {
                       setFieldError(null);

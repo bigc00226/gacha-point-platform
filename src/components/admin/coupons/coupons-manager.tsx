@@ -126,7 +126,7 @@ export function CouponsManager({ initial }: { initial: ListDto }) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="有効なコード" value={formatNumber(k.activeCodes)} icon="coupon" tone="primary" />
         <StatCard label="本日の利用" value={`${formatNumber(k.redemptionsToday)}件`} icon="activity" tone="info" />
         <StatCard label="付与済みポイント" value={`${formatNumber(k.redeemedPoints)}pt`} icon="coin" tone="point" />
@@ -142,6 +142,7 @@ export function CouponsManager({ initial }: { initial: ListDto }) {
               { key: "shared", label: "先着限定型（あいことば）", icon: "megaphone" },
             ]}
             value={mode}
+            fullWidth
             onChange={(m) => {
               setMode(m);
               setFieldError(null);
@@ -259,35 +260,35 @@ export function CouponsManager({ initial }: { initial: ListDto }) {
                 <TH className="w-44">利用状況</TH>
                 <TH>状態</TH>
                 <TH>有効期限</TH>
-                <TH>メモ</TH>
+                <TH className="@max-5xl:hidden">メモ</TH>
                 <TH className="text-right">操作</TH>
               </tr>
             </THead>
             <TBody>
               {pageItems.map((c) => (
                 <TR key={c.id}>
-                  <TD>
+                  <TD mobile="title">
                     <div className="flex items-center gap-1.5">
-                      <code className="font-mono text-sm font-bold">{c.displayCode}</code>
+                      <code className="whitespace-nowrap font-mono text-sm font-bold @max-4xl:whitespace-normal @max-4xl:break-all">{c.displayCode}</code>
                       <CopyButton text={c.displayCode} label="" copiedLabel="" className="px-1.5" />
                     </div>
                   </TD>
-                  <TD>
+                  <TD label="種類">
                     <Badge tone={c.type === "single" ? "info" : "primary"}>{c.type === "single" ? "使い捨て" : "先着限定"}</Badge>
                   </TD>
-                  <TD className="tabular text-right font-bold text-point">{formatNumber(c.points)}pt</TD>
-                  <TD>
+                  <TD label="付与" className="tabular text-right font-bold text-point">{formatNumber(c.points)}pt</TD>
+                  <TD label="利用状況" mobile="stack">
                     <p className="tabular text-xs">
                       {formatNumber(c.usedCount)} / {formatNumber(c.maxUses)}
                     </p>
                     <ProgressBar value={c.usedCount} max={c.maxUses} size="sm" tone={c.usedCount >= c.maxUses ? "danger" : "primary"} className="mt-1" />
                   </TD>
-                  <TD>
+                  <TD label="状態">
                     <Badge tone={STATE_TONE[c.state]}>{STATE_LABEL[c.state]}</Badge>
                   </TD>
-                  <TD className="text-xs text-muted">{c.expiresAt ? formatDate(c.expiresAt) : "なし"}</TD>
-                  <TD className="max-w-48 truncate text-xs text-muted">{c.label}</TD>
-                  <TD>
+                  <TD label="有効期限" className="text-xs text-muted">{c.expiresAt ? formatDate(c.expiresAt) : "なし"}</TD>
+                  <TD label="メモ" className="max-w-48 truncate text-xs text-muted @4xl:@max-5xl:hidden">{c.label}</TD>
+                  <TD label="有効・操作">
                     <div className="flex items-center justify-end gap-1">
                       <Switch checked={c.active} onChange={() => toggle(c)} disabled={busy === c.id} />
                       <IconButton icon="history" label="利用履歴" size="xs" onClick={() => openHistory(c)} />

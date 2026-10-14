@@ -116,7 +116,7 @@ export function RewardSettingsForm({ initial }: { initial: RewardSettingsPageDto
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="本日のログインボーナス" value={`${formatNumber(stats.login.tickets)}枚`} sub={`${formatNumber(stats.login.count)}件`} icon="calendar" tone="primary" />
         <StatCard label="本日の動画視聴" value={`${formatNumber(stats.video.tickets)}枚`} sub={`${formatNumber(stats.video.count)}件`} icon="tv" tone="ticket" />
         <StatCard label="本日の案件達成" value={`${formatNumber(stats.offer.tickets)}枚`} sub={`${formatNumber(stats.offer.count)}件`} icon="smartphone" tone="info" />
@@ -232,19 +232,22 @@ export function RewardSettingsForm({ initial }: { initial: RewardSettingsPageDto
         )}
       </Card>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 backdrop-blur lg:left-64">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:left-64">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <p className={cn("text-sm", dirty ? "font-bold text-warning" : "text-muted")}>
+          <p className={cn("min-w-0 text-xs leading-snug sm:text-sm", dirty ? "font-bold text-warning" : "text-muted")}>
             {dirty ? (
               <>
                 <Icon name="alert" size={14} className="mr-1 inline" />
-                未保存の変更があります（保存すると次の付与からすぐ反映されます）
+                未保存の変更があります<span className="hidden sm:inline">（保存すると次の付与からすぐ反映されます）</span>
               </>
             ) : (
-              `最終更新: ${formatDateTime(saved.updatedAt)}${saved.updatedBy ? `（${saved.updatedBy}）` : ""}`
+              <>
+                最終更新: {formatDateTime(saved.updatedAt)}
+                {saved.updatedBy && <span className="hidden sm:inline">（{saved.updatedBy}）</span>}
+              </>
             )}
           </p>
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <Button variant="secondary" disabled={!dirty || saving} onClick={() => setForm(toForm(saved))}>
               元に戻す
             </Button>

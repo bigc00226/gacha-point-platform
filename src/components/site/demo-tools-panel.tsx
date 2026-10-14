@@ -111,11 +111,12 @@ export function DemoToolsPanel({ user }: { user: PublicUser | null }) {
         aria-expanded={open}
         aria-label="デモ操作パネルを開く"
         className={cn(
-          "fixed right-0 top-[58%] z-[60] flex -translate-y-1/2 items-center gap-1 rounded-l-xl border border-r-0 border-accent/50 bg-[#1d1405]/95 px-1.5 py-3 text-[11px] font-black tracking-[0.2em] text-accent shadow-xl backdrop-blur transition-transform hover:-translate-x-0.5",
+          // Phones: slim enough to sit inside the 16px page gutter instead of covering text.
+          "fixed right-0 top-[58%] z-[60] flex -translate-y-1/2 items-center gap-1 rounded-l-lg border border-r-0 border-accent/50 bg-[#1d1405]/95 px-[3px] py-2 text-[9px] font-black tracking-[0.18em] text-accent shadow-xl backdrop-blur transition-transform hover:-translate-x-0.5 sm:rounded-l-xl sm:px-1.5 sm:py-3 sm:text-[11px] sm:tracking-[0.2em]",
           "[writing-mode:vertical-rl]",
         )}
       >
-        <Icon name="flask" size={14} className="rotate-90" />
+        <Icon name="flask" size={14} className="hidden rotate-90 sm:block" />
         DEMO
       </button>
 

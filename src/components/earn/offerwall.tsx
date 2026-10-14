@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { OfferCategory } from "@/lib/types";
 import { OFFER_CATEGORY_LABELS } from "@/lib/constants";
 import { api, ApiClientError, errorMessage } from "@/lib/client/api";
@@ -14,6 +14,7 @@ import { EmptyState, Notice } from "@/components/ui/misc";
 import { Modal } from "@/components/ui/modal";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/toast";
+import { useScrollFade } from "@/components/ui/use-scroll-fade";
 import type { OfferCompleteDto, OfferDto } from "./types";
 import { VerificationPanel } from "./verification-panel";
 
@@ -54,6 +55,8 @@ export function Offerwall({ offers, loggedIn, multiplier }: { offers: OfferDto[]
   const router = useRouter();
   const toast = useToast();
   const [category, setCategory] = useState<OfferCategory | "all">("all");
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const chipsFade = useScrollFade(chipsRef);
   const [selected, setSelected] = useState<OfferDto | null>(null);
   const [step, setStep] = useState<Step>("detail");
   const [result, setResult] = useState<OfferCompleteDto | null>(null);
@@ -101,7 +104,7 @@ export function Offerwall({ offers, loggedIn, multiplier }: { offers: OfferDto[]
 
   return (
     <div>
-      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="カテゴリ">
+      <div ref={chipsRef} style={chipsFade} className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="カテゴリ">
         {(["all", ...categories] as const).map((c) => {
           const active = c === category;
           return (
@@ -130,7 +133,7 @@ export function Offerwall({ offers, loggedIn, multiplier }: { offers: OfferDto[]
       ) : (
         <ul className="grid gap-3 md:grid-cols-2">
           {shown.map((offer) => (
-            <li key={offer.id}>
+            <li key={offer.id} className="cv-auto [--cv-size:96px]">
               <button
                 type="button"
                 onClick={() => openOffer(offer)}

@@ -136,7 +136,7 @@ export function OrdersManager({ initial }: { initial: ListDto }) {
   const k = data.kpis;
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="未発送" value={`${formatNumber(k.pending)}件`} icon="package" tone={k.pending > 0 ? "warning" : "success"} />
         <StatCard label="本日の申込" value={`${formatNumber(k.todayRequests)}件`} icon="activity" tone="info" />
         <StatCard label="今週の発送" value={`${formatNumber(k.shippedThisWeek)}件`} icon="truck" tone="success" />
@@ -186,6 +186,19 @@ export function OrdersManager({ initial }: { initial: ListDto }) {
         {list.length === 0 ? (
           <EmptyState icon="truck" title="該当する注文はありません" className="py-12" />
         ) : (
+          // Container: the select-all row shows exactly when the table is in card mode (header hidden).
+          <div className="@container">
+          {pendingOnPage.length > 0 && (
+            <label className="flex items-center gap-2 border-b border-line px-4 py-2.5 text-sm font-bold text-muted @4xl:hidden">
+              <input
+                type="checkbox"
+                checked={pendingOnPage.every((o) => selected.has(o.id))}
+                onChange={toggleAll}
+                className="size-4 accent-(--primary)"
+              />
+              このページの未発送をすべて選択
+            </label>
+          )}
           <Table>
             <THead>
               <tr>
@@ -204,14 +217,14 @@ export function OrdersManager({ initial }: { initial: ListDto }) {
                 <TH>景品</TH>
                 <TH>区分</TH>
                 <TH>状態</TH>
-                <TH>お届け先</TH>
+                <TH className="@max-5xl:hidden">お届け先</TH>
                 <TH />
               </tr>
             </THead>
             <TBody>
               {pageItems.map((o) => (
-                <TR key={o.id} className={cn(selected.has(o.id) && "bg-primary/5")}>
-                  <TD>
+                <TR key={o.id} className={cn("@max-4xl:relative", selected.has(o.id) && "bg-primary/5")}>
+                  <TD className="@max-4xl:absolute @max-4xl:right-4 @max-4xl:top-3 @max-4xl:w-auto @max-4xl:p-0">
                     <input
                       type="checkbox"
                       aria-label={`${o.itemName}を選択`}
@@ -228,31 +241,31 @@ export function OrdersManager({ initial }: { initial: ListDto }) {
                       className="size-4 accent-(--primary)"
                     />
                   </TD>
-                  <TD className="tabular whitespace-nowrap text-xs">{formatDateTime(o.createdAt)}</TD>
-                  <TD className="text-sm">
+                  <TD label="申込日時" className="tabular whitespace-nowrap text-xs">{formatDateTime(o.createdAt)}</TD>
+                  <TD label="会員" className="text-sm">
                     <Link href={`/admin/users/${o.userId}`} className="font-bold hover:underline">
                       {o.userNickname}
                     </Link>
                   </TD>
-                  <TD>
+                  <TD mobile="title" className="@max-4xl:pr-8">
                     <div className="flex items-center gap-2">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-3">
                         {o.imageUrl && <img src={o.imageUrl} alt="" className="size-7 object-contain" />}
                       </span>
-                      <span className="max-w-52 truncate text-sm">{o.itemName}</span>
+                      <span className="max-w-52 truncate text-sm @max-4xl:max-w-none @max-4xl:font-bold">{o.itemName}</span>
                     </div>
                   </TD>
-                  <TD>
+                  <TD label="区分">
                     <Badge tone={o.source === "exchange" ? "point" : "primary"} size="xs">
                       {ORDER_SOURCE_LABELS[o.source]}
                     </Badge>
                   </TD>
-                  <TD>
+                  <TD label="状態">
                     <Badge tone={STATUS_TONE[o.status]}>{o.itemType === "digital" && o.status === "shipped" ? "発行済" : ORDER_STATUS_LABELS[o.status]}</Badge>
                   </TD>
-                  <TD className="max-w-60 truncate text-xs text-muted">{o.address ? `${o.address.prefecture}${o.address.city} ${o.address.fullName}` : "—（デジタル）"}</TD>
-                  <TD>
-                    <Button size="xs" variant="secondary" onClick={() => openDetail(o)}>
+                  <TD label="お届け先" className="max-w-60 truncate text-xs text-muted @4xl:@max-5xl:hidden">{o.address ? `${o.address.prefecture}${o.address.city} ${o.address.fullName}` : "—（デジタル）"}</TD>
+                  <TD className="@max-4xl:pt-2">
+                    <Button size="xs" variant="secondary" onClick={() => openDetail(o)} className="@max-4xl:w-full">
                       詳細
                     </Button>
                   </TD>
@@ -260,6 +273,7 @@ export function OrdersManager({ initial }: { initial: ListDto }) {
               ))}
             </TBody>
           </Table>
+          </div>
         )}
         <div className="border-t border-line px-4 py-3">
           <Pagination page={page} pageCount={pageCount} onChange={setPage} total={total} />

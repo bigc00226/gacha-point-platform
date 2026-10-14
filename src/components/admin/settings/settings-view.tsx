@@ -162,11 +162,11 @@ export function SettingsView({ data }: { data: SettingsPageDto }) {
           <TBody>
             {pageItems.map((a) => (
               <TR key={a.id}>
-                <TD className="whitespace-nowrap text-xs">{formatDateTime(a.createdAt)}</TD>
-                <TD className="text-sm">{a.actorName}</TD>
-                <TD className="text-sm font-bold">{a.action}</TD>
-                <TD className="max-w-60 truncate text-sm">{a.target}</TD>
-                <TD className="max-w-96 truncate text-xs text-muted">{a.detail}</TD>
+                <TD label="日時" className="whitespace-nowrap text-xs">{formatDateTime(a.createdAt)}</TD>
+                <TD label="管理者" className="text-sm">{a.actorName}</TD>
+                <TD mobile="title" className="text-sm font-bold">{a.action}</TD>
+                <TD label="対象" className="max-w-60 truncate text-sm">{a.target}</TD>
+                <TD label="詳細" mobile="stack" className="max-w-96 truncate text-xs text-muted">{a.detail}</TD>
               </TR>
             ))}
           </TBody>

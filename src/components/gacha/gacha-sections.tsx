@@ -182,7 +182,7 @@ function PrizeRow({ prize, color }: { prize: PrizeDto; color: string }) {
   return (
     <li
       className={cn(
-        "relative flex gap-3 overflow-hidden rounded-2xl border bg-surface-2/70 p-3",
+        "cv-auto relative flex gap-3 overflow-hidden rounded-2xl border bg-surface-2/70 p-3 [--cv-size:96px]",
         prize.soldOut ? "border-line opacity-60" : "border-line",
       )}
     >

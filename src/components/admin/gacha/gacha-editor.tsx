@@ -349,10 +349,11 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                     className={cn("rounded-xl border bg-surface p-3", f("probabilityInput") || f("name") || f("stock") || f("pointValue") ? "border-danger" : "border-line")}
                     style={{ borderLeftWidth: 4, borderLeftColor: rank?.color ?? "var(--line)" }}
                   >
-                    <div className="flex gap-3">
+                    {/* Phones: image + row buttons on top, then the fields in two columns. */}
+                    <div className="flex flex-wrap gap-3 sm:flex-nowrap">
                       <MediaPicker compact value={p.imageUrl} onChange={(url) => setPrize(i, { imageUrl: url })} kinds={["image"]} label="景品画像" />
-                      <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-12">
-                        <div className="sm:col-span-3">
+                      <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 max-sm:order-last max-sm:basis-full sm:grid-cols-12">
+                        <div className="max-sm:order-1 sm:col-span-3">
                           <Select value={p.rankId} onChange={(e) => setPrize(i, { rankId: e.target.value })} aria-label="ランク" invalid={!!f("rankId")}>
                             {prizeRankOptions.map((rk) => (
                               <option key={rk.id} value={rk.id}>
@@ -361,10 +362,10 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                             ))}
                           </Select>
                         </div>
-                        <div className="sm:col-span-6">
+                        <div className="col-span-2 max-sm:order-3 sm:col-span-6">
                           <Input value={p.name} onChange={(e) => setPrize(i, { name: e.target.value })} placeholder="景品名（例: Nintendo Switch 2）" aria-label="景品名" invalid={!!f("name")} />
                         </div>
-                        <div className="sm:col-span-3">
+                        <div className="max-sm:order-2 sm:col-span-3">
                           <Select value={p.type} onChange={(e) => setPrize(i, { type: e.target.value as PrizeType })} aria-label="景品の種類">
                             {(Object.keys(PRIZE_TYPE_LABELS) as PrizeType[]).map((t) => (
                               <option key={t} value={t}>
@@ -373,7 +374,7 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                             ))}
                           </Select>
                         </div>
-                        <div className="sm:col-span-5">
+                        <div className="col-span-2 max-sm:order-4 sm:col-span-5">
                           {p.isFallback ? (
                             <div className="flex h-11 items-center gap-2 rounded-xl border border-dashed border-success/50 bg-success/5 px-3 text-sm">
                               <Icon name="percent" size={15} className="text-success" />
@@ -391,7 +392,7 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                             />
                           )}
                         </div>
-                        <div className="sm:col-span-3">
+                        <div className="max-sm:order-5 sm:col-span-3">
                           <div className="relative">
                             <Input
                               type="number"
@@ -406,7 +407,7 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">pt</span>
                           </div>
                         </div>
-                        <div className="sm:col-span-4">
+                        <div className="max-sm:order-6 sm:col-span-4">
                           <div className="relative">
                             <Input
                               type="number"
@@ -422,7 +423,7 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted">当選 {formatNumber(p.wonCount)}</span>
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:col-span-12">
+                        <div className="col-span-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs max-sm:order-7 sm:col-span-12">
                           <span className={cn("tabular font-bold", p.isFallback ? "text-success" : r && r.ok ? "text-fg" : "text-danger")}>
                             {p.isFallback
                               ? `当選確率 ${remainder >= 0 ? ppbToPercent(remainder, 4) : "—"}（残り確率）`
@@ -441,7 +442,7 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                           )}
                         </div>
                       </div>
-                      <div className="flex shrink-0 flex-col gap-1">
+                      <div className="flex shrink-0 gap-1 max-sm:ml-auto max-sm:self-start sm:flex-col">
                         <IconButton icon="chevronUp" label="上へ" size="xs" onClick={() => movePrize(i, -1)} disabled={i === 0} />
                         <IconButton icon="chevronDown" label="下へ" size="xs" onClick={() => movePrize(i, 1)} disabled={i === form.prizes.length - 1} />
                         <IconButton
@@ -536,17 +537,17 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
                       const max = Math.max(observedRate, expectedRate, 1e-9);
                       return (
                         <TR key={row.key}>
-                          <TD>
+                          <TD mobile="title">
                             <div className="flex items-center gap-2">
                               <RankBadge name={row.rankName} color={row.rankColor} size="xs" />
                               <span className="max-w-48 truncate">{row.name}</span>
                               {row.stockLeft !== null && <Badge size="xs" tone="warning">在庫{formatNumber(row.stockLeft)}</Badge>}
                             </div>
                           </TD>
-                          <TD className="tabular text-right">{ppbToPercent(row.configuredPpb, 4)}</TD>
-                          <TD className="tabular text-right">{formatNumber(row.observed)}</TD>
-                          <TD className="tabular text-right font-bold">{(observedRate * 100).toLocaleString("ja-JP", { maximumFractionDigits: 4 })}%</TD>
-                          <TD>
+                          <TD label="設定確率" className="tabular text-right">{ppbToPercent(row.configuredPpb, 4)}</TD>
+                          <TD label="当選回数" className="tabular text-right">{formatNumber(row.observed)}</TD>
+                          <TD label="実測" className="tabular text-right font-bold">{(observedRate * 100).toLocaleString("ja-JP", { maximumFractionDigits: 4 })}%</TD>
+                          <TD className="@max-4xl:pt-2">
                             <div className="space-y-1">
                               <div className="h-1.5 rounded-full bg-surface-3">
                                 <div className="h-full rounded-full bg-subtle" style={{ width: `${(expectedRate / max) * 100}%` }} />
@@ -635,24 +636,27 @@ export function GachaEditor({ gacha, ranks }: { gacha: GachaEditDto; ranks: Rank
         </aside>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 backdrop-blur lg:left-64">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:left-64">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
             {!isNew && (
               <>
-                <ButtonLink href={`/gacha/${gacha.id}`} target="_blank" variant="ghost" size="sm" leftIcon="external">
-                  ユーザー画面で見る
+                {/* Phones: icon-only, so the bar stays one row. */}
+                <ButtonLink href={`/gacha/${gacha.id}`} target="_blank" variant="ghost" size="sm" leftIcon="external" aria-label="ユーザー画面で見る">
+                  <span className="hidden sm:inline">ユーザー画面で見る</span>
                 </ButtonLink>
-                <Button variant="ghost" size="sm" leftIcon="trash" className="text-danger" onClick={() => setConfirmDelete(true)}>
-                  削除
+                <Button variant="ghost" size="sm" leftIcon="trash" className="text-danger" onClick={() => setConfirmDelete(true)} aria-label="削除">
+                  <span className="hidden sm:inline">削除</span>
                 </Button>
               </>
             )}
-            <span className={cn("hidden text-sm sm:inline", dirty ? "font-bold text-warning" : "text-muted")}>{dirty ? "未保存の変更があります" : "保存済み"}</span>
+            <span className={cn("hidden text-sm md:inline", dirty ? "font-bold text-warning" : "text-muted")}>{dirty ? "未保存の変更があります" : "保存済み"}</span>
+            {dirty && <span className="size-2 shrink-0 rounded-full bg-warning md:hidden" title="未保存の変更があります" />}
           </div>
-          <div className="flex gap-2">
-            <ButtonLink href="/admin/gachas" variant="secondary">
-              一覧に戻る
+          <div className="flex shrink-0 gap-2">
+            <ButtonLink href="/admin/gachas" variant="secondary" aria-label="一覧に戻る">
+              <span className="hidden sm:inline">一覧に戻る</span>
+              <span className="sm:hidden">一覧</span>
             </ButtonLink>
             <Button leftIcon="check" onClick={save} loading={saving} disabled={!isNew && !dirty}>
               {isNew ? "作成する" : "保存する"}

@@ -95,7 +95,7 @@ export function MypageView({ data, initialTab }: { data: MypageDto; initialTab: 
         </div>
       </div>
 
-      <Tabs items={tabs} value={tab} onChange={changeTab} />
+      <Tabs items={tabs} value={tab} onChange={changeTab} mobileColumns={3} />
 
       {tab === "overview" && (
         <div className="space-y-6">

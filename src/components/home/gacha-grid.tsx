@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/format";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { EmptyState } from "@/components/ui/misc";
+import { useScrollFade } from "@/components/ui/use-scroll-fade";
 import type { GachaCardDto } from "@/components/gacha/types";
 import { GachaCard } from "./gacha-card";
 
@@ -19,12 +20,14 @@ const FILTERS: Array<{ key: FilterKey; label: string; icon: IconName; test: (g: 
 
 export function GachaGrid({ gachas, serverNow }: { gachas: GachaCardDto[]; serverNow: number }) {
   const [filter, setFilter] = useState<FilterKey>("all");
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const chipsFade = useScrollFade(chipsRef);
   const active = FILTERS.find((f) => f.key === filter) ?? FILTERS[0];
   const shown = gachas.filter(active.test);
 
   return (
     <div>
-      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="ガチャの絞り込み">
+      <div ref={chipsRef} style={chipsFade} className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0" role="tablist" aria-label="ガチャの絞り込み">
         {FILTERS.map((f) => {
           const count = gachas.filter(f.test).length;
           if (f.key !== "all" && count === 0) return null;

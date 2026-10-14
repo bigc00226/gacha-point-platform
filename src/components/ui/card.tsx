@@ -20,8 +20,9 @@ export function CardHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5", className)}>
-      <div className="flex min-w-0 items-start gap-2.5">
+    // Actions drop below the title when the card is too narrow (phones) instead of squeezing it.
+    <div className={cn("flex flex-wrap items-start justify-between gap-x-3 gap-y-2.5 border-b border-line px-4 py-3.5 sm:px-5", className)}>
+      <div className="flex min-w-0 flex-1 basis-60 items-start gap-2.5">
         {icon && (
           <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-primary/12 text-primary">
             <Icon name={icon} size={17} />

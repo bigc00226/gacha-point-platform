@@ -102,17 +102,17 @@ export function StatCard({
     info: "bg-info/12 text-info",
   } as const;
   return (
-    <div className={cn("rounded-2xl border border-line bg-surface p-4", className)}>
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-bold text-muted">{label}</p>
+    <div className={cn("min-w-0 rounded-2xl border border-line bg-surface p-3.5 sm:p-4", className)}>
+      <div className="flex items-start justify-between gap-2">
+        <p className="min-w-0 text-xs font-bold leading-snug text-muted">{label}</p>
         {icon && (
-          <span className={cn("grid size-8 place-items-center rounded-lg", tones[tone])}>
+          <span className={cn("grid size-7 shrink-0 place-items-center rounded-lg sm:size-8", tones[tone])}>
             <Icon name={icon} size={16} />
           </span>
         )}
       </div>
-      <p className="tabular mt-2 text-2xl font-black tracking-tight text-fg">{value}</p>
-      {sub && <p className="mt-1 text-xs text-muted">{sub}</p>}
+      <p className="tabular mt-2 break-words text-xl font-black tracking-tight text-fg sm:text-2xl">{value}</p>
+      {sub && <p className="mt-1 text-xs leading-snug text-muted">{sub}</p>}
     </div>
   );
 }

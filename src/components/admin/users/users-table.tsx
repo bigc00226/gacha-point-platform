@@ -90,7 +90,7 @@ export function UsersTable({ users }: { users: AdminUserRowDto[] }) {
           <TBody>
             {pageItems.map((u) => (
               <TR key={u.id}>
-                <TD>
+                <TD mobile="title">
                   <Link href={`/admin/users/${u.id}`} className="flex items-center gap-3 hover:underline">
                     <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary/12 text-sm font-black text-primary">{u.nickname.slice(0, 1)}</span>
                     <span className="min-w-0">
@@ -99,18 +99,18 @@ export function UsersTable({ users }: { users: AdminUserRowDto[] }) {
                     </span>
                   </Link>
                 </TD>
-                <TD>
-                  <div className="flex flex-wrap gap-1">
+                <TD label="権限・状態">
+                  <div className="flex flex-wrap gap-1 @max-4xl:justify-end">
                     {u.role === "admin" && <Badge tone="primary" icon="shield">管理者</Badge>}
                     <Badge tone={u.status === "active" ? "success" : "danger"}>{u.status === "active" ? "利用中" : "利用停止"}</Badge>
                   </div>
                 </TD>
-                <TD className="tabular text-right font-bold text-ticket">{formatNumber(u.tickets)}枚</TD>
-                <TD className="tabular text-right font-bold text-point">{formatNumber(u.points)}pt</TD>
-                <TD className="tabular text-right text-sm">{formatNumber(u.draws)}口</TD>
-                <TD className="whitespace-nowrap text-xs text-muted">{formatDateTime(u.createdAt)}</TD>
-                <TD className="whitespace-nowrap text-xs text-muted">{u.lastLoginAt ? formatDateTime(u.lastLoginAt) : "—"}</TD>
-                <TD>
+                <TD label="チケット" className="tabular text-right font-bold text-ticket">{formatNumber(u.tickets)}枚</TD>
+                <TD label="ポイント" className="tabular text-right font-bold text-point">{formatNumber(u.points)}pt</TD>
+                <TD label="ガチャ" className="tabular text-right text-sm">{formatNumber(u.draws)}口</TD>
+                <TD label="登録日時" mobile="hide" className="whitespace-nowrap text-xs text-muted">{formatDateTime(u.createdAt)}</TD>
+                <TD label="最終ログイン" className="whitespace-nowrap text-xs text-muted">{u.lastLoginAt ? formatDateTime(u.lastLoginAt) : "—"}</TD>
+                <TD mobile="hide">
                   <Link href={`/admin/users/${u.id}`} className="text-subtle hover:text-fg" aria-label="詳細">
                     <Icon name="chevronRight" size={18} />
                   </Link>

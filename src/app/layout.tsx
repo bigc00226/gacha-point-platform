@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Dela_Gothic_One, Noto_Sans_JP } from "next/font/google";
+import { Dela_Gothic_One } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
-const notoSansJp = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
-  subsets: ["latin"],
-  display: "swap",
-});
-
+// Body text uses the device's own Japanese font (see --font-sans in globals.css).
+// A Japanese web font is split into ~120 files; every one that arrives makes the
+// browser lay the page out again, which froze phones for 1–2 s after load.
+// Only the display face (headings) is a web font.
 const delaGothic = Dela_Gothic_One({
   variable: "--font-dela-gothic",
   weight: "400",
@@ -40,7 +38,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ja" className={`${notoSansJp.variable} ${delaGothic.variable}`}>
+    <html lang="ja" className={delaGothic.variable}>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>
   );

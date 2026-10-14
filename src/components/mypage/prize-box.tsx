@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ShippingAddress, UserPrize } from "@/lib/types";
 import { EMPTY_ADDRESS, formatAddress, validateAddress, type AddressErrors } from "@/lib/address";
 import { USER_PRIZE_STATUS_LABELS } from "@/lib/constants";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/field";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Icon } from "@/components/ui/icon";
+import { useScrollFade } from "@/components/ui/use-scroll-fade";
 import { EmptyState, Notice } from "@/components/ui/misc";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
@@ -28,6 +29,8 @@ export function PrizeBox({ prizes, lastAddress }: { prizes: PrizeRow[]; lastAddr
   const router = useRouter();
   const toast = useToast();
   const [filter, setFilter] = useState<Filter>("all");
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const chipsFade = useScrollFade(chipsRef);
   const [shipping, setShipping] = useState<PrizeRow | null>(null);
   const [address, setAddress] = useState<ShippingAddress>(lastAddress ?? EMPTY_ADDRESS);
   const [errors, setErrors] = useState<AddressErrors>({});
@@ -94,7 +97,7 @@ export function PrizeBox({ prizes, lastAddress }: { prizes: PrizeRow[]; lastAddr
           お届け先を入力して発送を依頼してください。
         </Notice>
       )}
-      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div ref={chipsRef} style={chipsFade} className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
         {filters.map((f) => (
           <button
             key={f.key}

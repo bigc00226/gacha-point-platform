@@ -60,7 +60,7 @@ export function ExchangeCatalog({ items, points }: { items: ExchangeItem[]; poin
             const short = points !== null ? item.pointsRequired - points : 0;
             const affordable = points !== null && short <= 0;
             return (
-              <li key={item.id}>
+              <li key={item.id} className="cv-auto [--cv-size:300px]">
                 <Link
                   href={`/exchange/${item.id}`}
                   className={cn(

@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="総会員数" value={formatNumber(k.members)} sub={`本日の新規 +${formatNumber(k.newToday)}名`} icon="users" tone="primary" />
         <StatCard label="本日のアクティブ会員" value={formatNumber(k.activeToday)} sub="付与・消費があった会員" icon="activity" tone="info" />
         <StatCard label="本日の抽選" value={`${formatNumber(k.slotsToday)}口`} sub={`${formatNumber(k.drawRequestsToday)}リクエスト（1・10・100回）`} icon="capsule" tone="success" />

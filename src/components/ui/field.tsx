@@ -2,8 +2,10 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/format";
 import { Icon } from "./icon";
 
+// 16px text below `sm`: iPhone Safari zooms the page in when a smaller field gets
+// focus and stays zoomed, which made forms feel stuck on phones.
 const CONTROL =
-  "w-full rounded-xl border bg-surface-2 text-sm text-fg placeholder:text-subtle transition-colors " +
+  "w-full rounded-xl border bg-surface-2 text-base text-fg placeholder:text-subtle transition-colors sm:text-sm " +
   "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 " +
   "disabled:cursor-not-allowed disabled:opacity-60";
 

@@ -37,19 +37,19 @@ function LedgerTable({ entries }: { entries: AdminUserDetailDto["ledger"] }) {
         <TBody>
           {pageItems.map((e) => (
             <TR key={e.id}>
-              <TD className="whitespace-nowrap text-xs">{formatDateTime(e.createdAt)}</TD>
-              <TD className="max-w-72 truncate text-sm">{e.description}</TD>
-              <TD>
+              <TD label="日時" className="whitespace-nowrap text-xs">{formatDateTime(e.createdAt)}</TD>
+              <TD mobile="title" className="max-w-72 truncate text-sm @max-4xl:font-bold">{e.description}</TD>
+              <TD mobile="hide">
                 <Badge size="xs" tone={e.currency === "ticket" ? "ticket" : "point"}>
                   {LEDGER_REASON_LABELS[e.reason]}
                 </Badge>
               </TD>
-              <TD className={cn("tabular text-right font-bold", e.amount >= 0 ? (e.currency === "ticket" ? "text-ticket" : "text-point") : "text-danger")}>
+              <TD label="増減" className={cn("tabular text-right font-bold", e.amount >= 0 ? (e.currency === "ticket" ? "text-ticket" : "text-point") : "text-danger")}>
                 {e.amount > 0 ? "+" : ""}
                 {formatNumber(e.amount)}
                 {e.currency === "ticket" ? "枚" : "pt"}
               </TD>
-              <TD className="tabular text-right text-xs text-muted">
+              <TD label="残高" className="tabular text-right text-xs text-muted">
                 {formatNumber(e.balanceAfter)}
                 {e.currency === "ticket" ? "枚" : "pt"}
               </TD>
@@ -125,7 +125,7 @@ export function UserDetail({ initial, selfId }: { initial: AdminUserDetailDto; s
         </Button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard label="ガチャチケット" value={`${formatNumber(u.tickets)}枚`} icon="ticket" tone="ticket" />
         <StatCard label="ポイント" value={`${formatNumber(u.points)}pt`} icon="coin" tone="point" />
         <StatCard label="ガチャ" value={`${formatNumber(u.draws)}口`} sub={`${formatNumber(data.draws.length)}リクエスト（直近）`} icon="capsule" tone="primary" />
@@ -206,14 +206,14 @@ export function UserDetail({ initial, selfId }: { initial: AdminUserDetailDto; s
                   const best = d.results.reduce((t, r) => (r.rankOrder < t.rankOrder ? r : t), d.results[0]);
                   return (
                     <TR key={d.id}>
-                      <TD className="whitespace-nowrap text-xs">{formatDateTime(d.createdAt)}</TD>
-                      <TD className="text-sm">{d.gachaTitle}</TD>
-                      <TD className="tabular text-right">{d.count}回</TD>
-                      <TD>
+                      <TD label="日時" className="whitespace-nowrap text-xs">{formatDateTime(d.createdAt)}</TD>
+                      <TD mobile="title" className="text-sm @max-4xl:font-bold">{d.gachaTitle}</TD>
+                      <TD label="回数" className="tabular text-right">{d.count}回</TD>
+                      <TD label="最高ランク">
                         {best && <RankBadge name={`${best.rankName} ${best.prizeName}`} color={best.rankColor} size="xs" />}
                         {d.lastOne && <Badge tone="gold" size="xs" className="ml-1">ラストワン</Badge>}
                       </TD>
-                      <TD className="tabular text-right font-bold text-point">{formatNumber(d.pointsGained)}pt</TD>
+                      <TD label="獲得pt" className="tabular text-right font-bold text-point">{formatNumber(d.pointsGained)}pt</TD>
                     </TR>
                   );
                 })}
@@ -236,12 +236,12 @@ export function UserDetail({ initial, selfId }: { initial: AdminUserDetailDto; s
               <TBody>
                 {data.prizes.map((p) => (
                   <TR key={p.id}>
-                    <TD className="whitespace-nowrap text-xs">{formatDateTime(p.createdAt)}</TD>
-                    <TD className="text-sm">
+                    <TD label="獲得日時" className="whitespace-nowrap text-xs">{formatDateTime(p.createdAt)}</TD>
+                    <TD mobile="title" className="text-sm @max-4xl:font-bold">
                       {p.isLastOne ? <Badge tone="gold" size="xs" className="mr-1">ラストワン</Badge> : <RankBadge name={p.rankName} color={p.rankColor} size="xs" />} {p.name}
                     </TD>
-                    <TD className="text-xs">{p.type === "digital" ? "デジタル" : "実物"}</TD>
-                    <TD>
+                    <TD label="種類" className="text-xs">{p.type === "digital" ? "デジタル" : "実物"}</TD>
+                    <TD label="状態">
                       <Badge size="xs" tone={p.status === "shipped" ? "success" : p.status === "owned" ? "warning" : "info"}>
                         {p.type === "digital" ? "コード発行済" : USER_PRIZE_STATUS_LABELS[p.status]}
                       </Badge>
@@ -267,10 +267,10 @@ export function UserDetail({ initial, selfId }: { initial: AdminUserDetailDto; s
               <TBody>
                 {data.orders.map((o) => (
                   <TR key={o.id}>
-                    <TD className="whitespace-nowrap text-xs">{formatDateTime(o.createdAt)}</TD>
-                    <TD className="text-sm">{o.itemName}</TD>
-                    <TD className="tabular text-right">{o.pointsSpent > 0 ? `${formatNumber(o.pointsSpent)}pt` : "—"}</TD>
-                    <TD>
+                    <TD label="申込日時" className="whitespace-nowrap text-xs">{formatDateTime(o.createdAt)}</TD>
+                    <TD mobile="title" className="text-sm @max-4xl:font-bold">{o.itemName}</TD>
+                    <TD label="ポイント" className="tabular text-right">{o.pointsSpent > 0 ? `${formatNumber(o.pointsSpent)}pt` : "—"}</TD>
+                    <TD label="状態">
                       <Badge size="xs" tone={o.status === "pending" ? "warning" : o.status === "shipped" ? "success" : "neutral"}>
                         {ORDER_STATUS_LABELS[o.status]}
                       </Badge>
@@ -296,16 +296,16 @@ export function UserDetail({ initial, selfId }: { initial: AdminUserDetailDto; s
               <TBody>
                 {data.postbacks.map((p) => (
                   <TR key={p.id}>
-                    <TD className="whitespace-nowrap text-xs">{formatDateTime(p.receivedAt)}</TD>
-                    <TD className="text-sm">
+                    <TD label="受信日時" className="whitespace-nowrap text-xs">{formatDateTime(p.receivedAt)}</TD>
+                    <TD mobile="title" className="text-sm @max-4xl:font-bold">
                       {p.kind === "video" ? "動画" : "案件"} / {p.provider}
                     </TD>
-                    <TD>
+                    <TD label="結果">
                       <Badge size="xs" tone={p.status === "granted" ? "success" : p.status === "duplicate" || p.status === "limit_reached" ? "warning" : "danger"}>
                         {POSTBACK_STATUS_LABELS[p.status]}
                       </Badge>
                     </TD>
-                    <TD className="tabular text-right font-bold text-ticket">{p.ticketsGranted > 0 ? `+${p.ticketsGranted}枚` : "—"}</TD>
+                    <TD label="付与" className="tabular text-right font-bold text-ticket">{p.ticketsGranted > 0 ? `+${p.ticketsGranted}枚` : "—"}</TD>
                   </TR>
                 ))}
               </TBody>

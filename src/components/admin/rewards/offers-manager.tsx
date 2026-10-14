@@ -150,15 +150,15 @@ export function OffersManager({ initial }: { initial: AdminOffersDto }) {
                 <TH>配信元</TH>
                 <TH>カテゴリ</TH>
                 <TH className="text-right">付与数</TH>
-                <TH className="text-right">達成（本日 / 累計）</TH>
+                <TH className="text-right @max-5xl:hidden">達成（本日 / 累計）</TH>
                 <TH>掲載</TH>
                 <TH className="text-right">操作</TH>
               </tr>
             </THead>
             <TBody>
               {data.offers.map((o) => (
-                <TR key={o.id}>
-                  <TD>
+                <TR key={o.id} className="@max-4xl:relative">
+                  <TD mobile="title" className="@max-4xl:pr-20">
                     <div className="flex items-center gap-3">
                       {o.iconUrl ? (
                         <img src={o.iconUrl} alt="" className="size-10 shrink-0 rounded-xl" />
@@ -173,24 +173,26 @@ export function OffersManager({ initial }: { initial: AdminOffersDto }) {
                       </div>
                     </div>
                   </TD>
-                  <TD>
+                  <TD label="配信元">
                     <Badge tone="neutral">{OFFER_PROVIDER_LABELS[o.provider]}</Badge>
                   </TD>
-                  <TD>
-                    <div className="flex flex-wrap gap-1">
+                  <TD label="カテゴリ">
+                    <div className="flex flex-wrap gap-1 @max-4xl:justify-end">
                       <Badge tone="info">{OFFER_CATEGORY_LABELS[o.category]}</Badge>
                       {o.repeatable && <Badge tone="success">毎日</Badge>}
                     </div>
                   </TD>
-                  <TD className="tabular text-right font-bold text-ticket">{formatNumber(o.tickets)}枚</TD>
-                  <TD className="tabular text-right">
-                    {formatNumber(o.completions.today)} / {formatNumber(o.completions.total)}
-                    <p className="text-[11px] text-muted">計 {formatNumber(o.completions.ticketsTotal)}枚</p>
+                  <TD label="付与数" className="tabular text-right font-bold text-ticket">{formatNumber(o.tickets)}枚</TD>
+                  <TD label="達成（本日 / 累計）" className="tabular text-right @4xl:@max-5xl:hidden">
+                    <div>
+                      {formatNumber(o.completions.today)} / {formatNumber(o.completions.total)}
+                      <p className="text-[11px] text-muted">計 {formatNumber(o.completions.ticketsTotal)}枚</p>
+                    </div>
                   </TD>
-                  <TD>
+                  <TD label="掲載">
                     <Switch checked={o.active} onChange={() => toggleActive(o)} disabled={busyId === o.id} label={o.active ? "掲載中" : "停止中"} />
                   </TD>
-                  <TD>
+                  <TD className="@max-4xl:absolute @max-4xl:right-2 @max-4xl:top-2.5 @max-4xl:w-auto @max-4xl:p-0">
                     <div className="flex justify-end gap-1">
                       <IconButton icon="edit" label="編集" size="sm" onClick={() => openEdit(o)} />
                       <IconButton icon="trash" label="削除" size="sm" onClick={() => setDeleting(o)} className="hover:text-danger" />

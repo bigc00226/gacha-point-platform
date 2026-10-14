@@ -40,10 +40,11 @@
   --color-rank-d: #9aa4b8;
   --color-rank-last: #ffb800;
 
-  --font-sans: var(--font-noto-sans-jp), "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+  /* System Japanese fonts: Hiragino (iOS/macOS), Noto Sans CJK (Android), Yu Gothic / Meiryo (Windows). */
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Noto Sans CJK JP",
     "Yu Gothic UI", "Yu Gothic", Meiryo, system-ui, sans-serif;
-  --font-display: var(--font-dela-gothic), var(--font-noto-sans-jp), "Hiragino Sans",
-    "Yu Gothic UI", Meiryo, sans-serif;
+  --font-display: var(--font-dela-gothic), "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+    "Noto Sans CJK JP", "Yu Gothic UI", Meiryo, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
@@ -203,6 +204,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+ * Responsive grids: `grid md:grid-cols-2` has no column template below `md`, so
+ * the implicit column is auto-sized and grows to the widest child (a long file
+ * name, a row of buttons…), pushing the whole page sideways on phones. Default
+ * to one shrinkable column; any `grid-cols-*` utility (utilities layer) still wins.
+ */
+@layer base {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 body {
   font-family: var(--font-sans);
   background: #0a0820;
@@ -259,6 +272,17 @@ body {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/*
+ * Off-screen items of long lists skip layout/paint until they near the viewport
+ * (keeps phones responsive right after load). --cv-size is the estimated height
+ * used until the item has been rendered once. Paint containment clips children
+ * that overflow the item, so use it on items that already clip their content.
+ */
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--cv-size, 480px);
 }
 
 /* Tabular numbers for balances and counters */
