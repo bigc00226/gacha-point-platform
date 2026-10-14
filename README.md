@@ -97,7 +97,7 @@ Vercel ではリクエストごとに別のサーバーインスタンスが応�
 
 ```bash
 npx vercel@latest login                               # 初回のみ
-npx vercel@latest                                     # プロジェクトを作成（質問はすべて既定値で OK）
+npx vercel@latest                                     # プロジェクトを作成。「Name?」に URL になる名前（例: poigacha-demo）を入力、他は既定値で OK
 npx vercel@latest env add SESSION_SECRET production   # 値は長いランダム文字列（例: openssl rand -hex 32 の出力）
 npx vercel@latest --prod                              # 本番 URL（https://<プロジェクト名>.vercel.app）に公開
 ```
